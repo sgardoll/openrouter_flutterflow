@@ -1,4 +1,4 @@
-import 'package:promptcraft/models/openrouter_models.dart';
+import 'openrouter_models.dart';
 
 /// Configuration class for OpenRouter package
 /// Provides default settings and commonly used model configurations

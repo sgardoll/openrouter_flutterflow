@@ -1,10 +1,10 @@
+import '/components/a_p_i_key_input_widget.dart';
+import '/components/model_lookup_and_selection_widget.dart';
 import '/components/open_router_response_widget.dart';
 import '/components/parameters_widget.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/form_field_controller.dart';
 import '/custom_code/openrouter_config.dart';
 import '/custom_code/openrouter_service.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +36,15 @@ class _HomePageWidgetState extends State<HomePageWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.getModelsOnPageLaunch =
-          await _model.openrouterService?.fetchModels(
-        forceRefresh: true,
-      );
+      if (FFAppState().openRouterApiKey != '') {
+        _model.getAlModelsOnLaunch =
+            await _model.openrouterService?.fetchModels(
+          forceRefresh: true,
+        );
+        _model.modelList = _model.modelList.toList().cast<String>();
+        _model.openrouterConfig = OpenRouterConfig();
+        safeSetState(() {});
+      }
     });
 
     _model.tabBarController = TabController(
@@ -47,9 +52,6 @@ class _HomePageWidgetState extends State<HomePageWidget>
       length: 2,
       initialIndex: 0,
     )..addListener(() => safeSetState(() {}));
-
-    _model.textController1 ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
 
     _model.textFieldSystemTextController ??= TextEditingController();
     _model.textFieldSystemFocusNode ??= FocusNode();
@@ -76,6 +78,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
       },
       child: Scaffold(
         key: scaffoldKey,
+        resizeToAvoidBottomInset: false,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
         appBar: AppBar(
           backgroundColor: FlutterFlowTheme.of(context).alternate,
@@ -97,7 +100,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(
+              Flexible(
                 child: Column(
                   children: [
                     Align(
@@ -110,11 +113,13 @@ class _HomePageWidgetState extends State<HomePageWidget>
                             FlutterFlowTheme.of(context).titleSmall.override(
                                   fontFamily: 'Geist',
                                   letterSpacing: 0.0,
+                                  lineHeight: 0.9,
                                 ),
                         unselectedLabelStyle:
                             FlutterFlowTheme.of(context).titleSmall.override(
                                   fontFamily: 'Geist',
                                   letterSpacing: 0.0,
+                                  lineHeight: 0.9,
                                 ),
                         indicatorColor: FlutterFlowTheme.of(context).primary,
                         indicatorWeight: 3.0,
@@ -163,273 +168,32 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                     '',
                                             true,
                                           ))
-                                            Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'OpenRouter API Key',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyLarge
-                                                      .override(
-                                                        fontFamily: 'Geist',
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                ),
-                                                Container(
-                                                  width: double.infinity,
-                                                  child: TextFormField(
-                                                    controller:
-                                                        _model.textController1,
-                                                    focusNode: _model
-                                                        .textFieldFocusNode,
-                                                    autofocus: false,
-                                                    obscureText: false,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          'Enter your OpenRouter API key',
-                                                      hintStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyLarge
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Geist',
-                                                                letterSpacing:
-                                                                    0.0,
-                                                              ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .alternate,
-                                                          width: 1.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 1.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      errorBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 1.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      focusedErrorBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 1.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      contentPadding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  16.0,
-                                                                  16.0,
-                                                                  16.0,
-                                                                  16.0),
-                                                    ),
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily: 'Geist',
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                    validator: _model
-                                                        .textController1Validator
-                                                        .asValidator(context),
-                                                  ),
-                                                ),
-                                                FFButtonWidget(
-                                                  onPressed: () async {
-                                                    FFAppState()
-                                                            .openRouterApiKey =
-                                                        _model.textController1
-                                                            .text;
-                                                    FFAppState().update(() {});
-                                                  },
-                                                  text: 'Set API Key',
-                                                  options: FFButtonOptions(
-                                                    width: double.infinity,
-                                                    height: 44.0,
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    iconPadding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(0.0, 0.0,
-                                                                0.0, 0.0),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .secondaryBackground,
-                                                    textStyle: FlutterFlowTheme
-                                                            .of(context)
-                                                        .titleSmall
-                                                        .override(
-                                                          fontFamily: 'Geist',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .accent1,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                    elevation: 0.0,
-                                                    borderSide: BorderSide(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .alternate,
-                                                      width: 1.0,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
-                                                ),
-                                              ].divide(SizedBox(height: 16.0)),
+                                            wrapWithModel(
+                                              model: _model.aPIKeyInputModel,
+                                              updateCallback: () =>
+                                                  safeSetState(() {}),
+                                              updateOnChange: true,
+                                              child: APIKeyInputWidget(
+                                                onKeySet: (apiKey) async {
+                                                  FFAppState()
+                                                          .openRouterApiKey =
+                                                      apiKey;
+                                                  FFAppState().update(() {});
+                                                },
+                                              ),
                                             ),
-                                          if (valueOrDefault<bool>(
-                                            FFAppState().openRouterApiKey !=
-                                                    '',
-                                            false,
-                                          ))
-                                            Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      'Model Selection',
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodyLarge
-                                                          .override(
-                                                            fontFamily: 'Geist',
-                                                            letterSpacing: 0.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                    ),
-                                                    Icon(
-                                                      Icons.refresh_rounded,
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .secondaryText,
-                                                      size: 24.0,
-                                                    ),
-                                                  ],
-                                                ),
-                                                FlutterFlowDropDown<String>(
-                                                  controller: _model
-                                                          .dropDownValueController ??=
-                                                      FormFieldController<
-                                                          String>(
-                                                    _model.dropDownValue ??=
-                                                        OpenRouterConfig
-                                                            .popularModels
-                                                            .firstOrNull,
-                                                  ),
-                                                  options: _model
-                                                      .getModelsOnPageLaunch!
-                                                      .map((e) => e.name)
-                                                      .toList(),
-                                                  onChanged: (val) =>
-                                                      safeSetState(() => _model
-                                                          .dropDownValue = val),
-                                                  width:
-                                                      MediaQuery.sizeOf(context)
-                                                              .width *
-                                                          1.0,
-                                                  height: 44.0,
-                                                  searchHintTextStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelMedium
-                                                          .override(
-                                                            fontFamily: 'Geist',
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                  searchTextStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily: 'Geist',
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                  textStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily: 'Geist',
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                  hintText:
-                                                      'Select OpenRouter Model...',
-                                                  searchHintText: 'Search...',
-                                                  icon: Icon(
-                                                    Icons
-                                                        .keyboard_arrow_down_rounded,
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .secondaryText,
-                                                    size: 24.0,
-                                                  ),
-                                                  fillColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .secondaryBackground,
-                                                  elevation: 2.0,
-                                                  borderColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .alternate,
-                                                  borderWidth: 0.0,
-                                                  borderRadius: 8.0,
-                                                  margin: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          12.0, 0.0, 12.0, 0.0),
-                                                  hidesUnderline: true,
-                                                  isOverButton: false,
-                                                  isSearchable: true,
-                                                  isMultiSelect: false,
-                                                ),
-                                              ].divide(SizedBox(height: 12.0)),
+                                          wrapWithModel(
+                                            model: _model
+                                                .modelLookupAndSelectionModel,
+                                            updateCallback: () =>
+                                                safeSetState(() {}),
+                                            updateOnChange: true,
+                                            child:
+                                                ModelLookupAndSelectionWidget(
+                                              getOpenRouterModelsList:
+                                                  _model.modelList,
                                             ),
+                                          ),
                                           Column(
                                             mainAxisSize: MainAxisSize.max,
                                             crossAxisAlignment:
@@ -483,7 +247,9 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                         OutlineInputBorder(
                                                       borderSide: BorderSide(
                                                         color:
-                                                            Color(0x00000000),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
                                                         width: 1.0,
                                                       ),
                                                       borderRadius:
@@ -494,7 +260,9 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                         OutlineInputBorder(
                                                       borderSide: BorderSide(
                                                         color:
-                                                            Color(0x00000000),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
                                                         width: 1.0,
                                                       ),
                                                       borderRadius:
@@ -505,7 +273,9 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                         OutlineInputBorder(
                                                       borderSide: BorderSide(
                                                         color:
-                                                            Color(0x00000000),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
                                                         width: 1.0,
                                                       ),
                                                       borderRadius:
@@ -569,7 +339,9 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                         OutlineInputBorder(
                                                       borderSide: BorderSide(
                                                         color:
-                                                            Color(0x00000000),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
                                                         width: 1.0,
                                                       ),
                                                       borderRadius:
@@ -626,75 +398,77 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      Theme(
-                                                        data: ThemeData(
-                                                          checkboxTheme:
-                                                              CheckboxThemeData(
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .only(
-                                                                bottomLeft: Radius
-                                                                    .circular(
-                                                                        0.0),
-                                                                bottomRight: Radius
-                                                                    .circular(
-                                                                        0.0),
-                                                                topLeft: Radius
-                                                                    .circular(
-                                                                        0.0),
-                                                                topRight: Radius
-                                                                    .circular(
-                                                                        0.0),
+                                                  Flexible(
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                        Theme(
+                                                          data: ThemeData(
+                                                            checkboxTheme:
+                                                                CheckboxThemeData(
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .only(
+                                                                  bottomLeft: Radius
+                                                                      .circular(
+                                                                          0.0),
+                                                                  bottomRight: Radius
+                                                                      .circular(
+                                                                          0.0),
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          0.0),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          0.0),
+                                                                ),
                                                               ),
                                                             ),
+                                                            unselectedWidgetColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .alternate,
                                                           ),
-                                                          unselectedWidgetColor:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .alternate,
+                                                          child: Checkbox(
+                                                            value: _model
+                                                                    .checkboxStreamingValue ??=
+                                                                false,
+                                                            onChanged:
+                                                                (newValue) async {
+                                                              safeSetState(() =>
+                                                                  _model.checkboxStreamingValue =
+                                                                      newValue!);
+                                                            },
+                                                            side: (FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .alternate !=
+                                                                    null)
+                                                                ? BorderSide(
+                                                                    width: 2,
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .alternate,
+                                                                  )
+                                                                : null,
+                                                            activeColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                            checkColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                          ),
                                                         ),
-                                                        child: Checkbox(
-                                                          value: _model
-                                                                  .checkboxStreamingValue ??=
-                                                              false,
-                                                          onChanged:
-                                                              (newValue) async {
-                                                            safeSetState(() =>
-                                                                _model.checkboxStreamingValue =
-                                                                    newValue!);
-                                                          },
-                                                          side: (FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .alternate !=
-                                                                  null)
-                                                              ? BorderSide(
-                                                                  width: 2,
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .alternate,
-                                                                )
-                                                              : null,
-                                                          activeColor:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .primary,
-                                                          checkColor:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .primary,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Enable streaming',
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
+                                                        Flexible(
+                                                          child: Text(
+                                                            'Enable streaming',
+                                                            maxLines: 2,
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
                                                                 .bodyMedium
                                                                 .override(
                                                                   fontFamily:
@@ -702,9 +476,11 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                                   letterSpacing:
                                                                       0.0,
                                                                 ),
-                                                      ),
-                                                    ].divide(
-                                                        SizedBox(width: 8.0)),
+                                                          ),
+                                                        ),
+                                                      ].divide(
+                                                          SizedBox(width: 8.0)),
+                                                    ),
                                                   ),
                                                   Builder(
                                                     builder: (context) =>
@@ -714,7 +490,8 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                             OpenRouterConfig
                                                                 .createStandardRequest(
                                                           model: _model
-                                                              .dropDownValue!,
+                                                              .modelLookupAndSelectionModel
+                                                              .dropDownModelsAvailableValue!,
                                                           userMessage: _model
                                                               .textFieldUserTextController
                                                               .text,
@@ -804,7 +581,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                                                       'Geist',
                                                                   color: FlutterFlowTheme.of(
                                                                           context)
-                                                                      .accent1,
+                                                                      .primaryText,
                                                                   letterSpacing:
                                                                       0.0,
                                                                 ),

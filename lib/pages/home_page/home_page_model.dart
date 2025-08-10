@@ -1,6 +1,7 @@
+import '/components/a_p_i_key_input_widget.dart';
+import '/components/model_lookup_and_selection_widget.dart';
 import '/components/parameters_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/form_field_controller.dart';
 import '/custom_code/openrouter_config.dart';
 import '/custom_code/openrouter_models.dart';
 import '/custom_code/openrouter_service.dart';
@@ -25,10 +26,19 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   void updateChatMessagesAtIndex(int index, Function(ChatMessage) updateFn) =>
       chatMessages[index] = updateFn(chatMessages[index]);
 
+  List<String> modelList = [];
+  void addToModelList(String item) => modelList.add(item);
+  void removeFromModelList(String item) => modelList.remove(item);
+  void removeAtIndexFromModelList(int index) => modelList.removeAt(index);
+  void insertAtIndexInModelList(int index, String item) =>
+      modelList.insert(index, item);
+  void updateModelListAtIndex(int index, Function(String) updateFn) =>
+      modelList[index] = updateFn(modelList[index]);
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Custom Class Method - OpenRouterService.fetchModels] action in HomePage widget.
-  List<OpenRouterModel>? getModelsOnPageLaunch;
+  List<OpenRouterModel>? getAlModelsOnLaunch;
   // State field(s) for TabBar widget.
   TabController? tabBarController;
   int get tabBarCurrentIndex =>
@@ -36,13 +46,10 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   int get tabBarPreviousIndex =>
       tabBarController != null ? tabBarController!.previousIndex : 0;
 
-  // State field(s) for TextField widget.
-  FocusNode? textFieldFocusNode;
-  TextEditingController? textController1;
-  String? Function(BuildContext, String?)? textController1Validator;
-  // State field(s) for DropDown widget.
-  String? dropDownValue;
-  FormFieldController<String>? dropDownValueController;
+  // Model for APIKeyInput component.
+  late APIKeyInputModel aPIKeyInputModel;
+  // Model for ModelLookupAndSelection component.
+  late ModelLookupAndSelectionModel modelLookupAndSelectionModel;
   // State field(s) for TextFieldSystem widget.
   FocusNode? textFieldSystemFocusNode;
   TextEditingController? textFieldSystemTextController;
@@ -63,15 +70,17 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
 
   @override
   void initState(BuildContext context) {
+    aPIKeyInputModel = createModel(context, () => APIKeyInputModel());
+    modelLookupAndSelectionModel =
+        createModel(context, () => ModelLookupAndSelectionModel());
     parametersModel = createModel(context, () => ParametersModel());
   }
 
   @override
   void dispose() {
     tabBarController?.dispose();
-    textFieldFocusNode?.dispose();
-    textController1?.dispose();
-
+    aPIKeyInputModel.dispose();
+    modelLookupAndSelectionModel.dispose();
     textFieldSystemFocusNode?.dispose();
     textFieldSystemTextController?.dispose();
 
