@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'openrouter_models.dart';
+import 'package:promptcraft/models/openrouter_models.dart';
 
 class OpenRouterService {
   static const String _baseUrl = 'https://openrouter.ai/api/v1';
@@ -72,8 +72,16 @@ class OpenRouterService {
         final List<dynamic> modelsJson = data['data'] ?? [];
 
         _cachedModels = modelsJson
-            .map((json) => OpenRouterModel.fromJson(json))
-            .where((model) => model.id.isNotEmpty)
+            .map((json) {
+              try {
+                return OpenRouterModel.fromJson(json);
+              } catch (e) {
+                print('Error parsing model: $json - $e');
+                return null;
+              }
+            })
+            .where((model) => model != null && model.id.isNotEmpty)
+            .cast<OpenRouterModel>()
             .toList();
 
         // Sort by name for better UX
@@ -83,8 +91,10 @@ class OpenRouterService {
 
         return _cachedModels;
       } else {
-        throw Exception(
-            'Failed to fetch models: ${response.statusCode} ${response.body}');
+        final errorMessage = response.statusCode == 401
+            ? 'Invalid API key. Please check your OpenRouter API key.'
+            : 'Failed to fetch models: ${response.statusCode}';
+        throw Exception(errorMessage);
       }
     } catch (e) {
       throw Exception('Error fetching models: $e');

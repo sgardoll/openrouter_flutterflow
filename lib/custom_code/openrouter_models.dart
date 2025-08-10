@@ -22,10 +22,26 @@ class OpenRouterModel {
         id: json['id'] ?? '',
         name: json['name'] ?? json['id'] ?? '',
         description: json['description'] ?? '',
-        contextLength: json['context_length'] ?? 0,
+        contextLength: _parseInt(json['context_length']) ?? 0,
         architecture: json['architecture']?['tokenizer'] ?? 'Unknown',
-        pricing: (json['pricing']?['prompt']?.toDouble() ?? 0.0) * 1000000,
+        pricing: _parseDouble(json['pricing']?['prompt']) * 1000000,
       );
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,

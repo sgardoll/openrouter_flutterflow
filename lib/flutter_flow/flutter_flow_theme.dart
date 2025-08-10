@@ -142,10 +142,10 @@ class LightModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF4B39EF);
-  late Color secondary = const Color(0xFF39D2C0);
-  late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFFE0E3E7);
+  late Color primary = const Color(0xFF6061F0);
+  late Color secondary = const Color(0xFF008049);
+  late Color tertiary = const Color(0xFFF0E8F0);
+  late Color alternate = const Color(0xFF75757C);
   late Color primaryText = const Color(0xFF14181B);
   late Color secondaryText = const Color(0xFF57636C);
   late Color primaryBackground = const Color(0xFFF1F4F8);
@@ -213,107 +213,122 @@ class ThemeTypography extends Typography {
 
   final FlutterFlowTheme theme;
 
-  String get displayLargeFamily => 'Inter Tight';
-  bool get displayLargeIsCustom => false;
-  TextStyle get displayLarge => GoogleFonts.interTight(
+  String get displayLargeFamily => 'Geist';
+  bool get displayLargeIsCustom => true;
+  TextStyle get displayLarge => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.normal,
         fontSize: 64.0,
       );
-  String get displayMediumFamily => 'Inter Tight';
-  bool get displayMediumIsCustom => false;
-  TextStyle get displayMedium => GoogleFonts.interTight(
+  String get displayMediumFamily => 'Geist';
+  bool get displayMediumIsCustom => true;
+  TextStyle get displayMedium => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 44.0,
       );
-  String get displaySmallFamily => 'Inter Tight';
-  bool get displaySmallIsCustom => false;
-  TextStyle get displaySmall => GoogleFonts.interTight(
+  String get displaySmallFamily => 'Geist';
+  bool get displaySmallIsCustom => true;
+  TextStyle get displaySmall => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 36.0,
       );
-  String get headlineLargeFamily => 'Inter Tight';
-  bool get headlineLargeIsCustom => false;
-  TextStyle get headlineLarge => GoogleFonts.interTight(
+  String get headlineLargeFamily => 'Geist';
+  bool get headlineLargeIsCustom => true;
+  TextStyle get headlineLarge => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 32.0,
       );
-  String get headlineMediumFamily => 'Inter Tight';
-  bool get headlineMediumIsCustom => false;
-  TextStyle get headlineMedium => GoogleFonts.interTight(
+  String get headlineMediumFamily => 'Geist';
+  bool get headlineMediumIsCustom => true;
+  TextStyle get headlineMedium => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 28.0,
       );
-  String get headlineSmallFamily => 'Inter Tight';
-  bool get headlineSmallIsCustom => false;
-  TextStyle get headlineSmall => GoogleFonts.interTight(
+  String get headlineSmallFamily => 'Geist';
+  bool get headlineSmallIsCustom => true;
+  TextStyle get headlineSmall => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 24.0,
       );
-  String get titleLargeFamily => 'Inter Tight';
-  bool get titleLargeIsCustom => false;
-  TextStyle get titleLarge => GoogleFonts.interTight(
+  String get titleLargeFamily => 'Geist';
+  bool get titleLargeIsCustom => true;
+  TextStyle get titleLarge => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 20.0,
       );
-  String get titleMediumFamily => 'Inter Tight';
-  bool get titleMediumIsCustom => false;
-  TextStyle get titleMedium => GoogleFonts.interTight(
+  String get titleMediumFamily => 'Geist';
+  bool get titleMediumIsCustom => true;
+  TextStyle get titleMedium => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 18.0,
       );
-  String get titleSmallFamily => 'Inter Tight';
-  bool get titleSmallIsCustom => false;
-  TextStyle get titleSmall => GoogleFonts.interTight(
+  String get titleSmallFamily => 'Geist';
+  bool get titleSmallIsCustom => true;
+  TextStyle get titleSmall => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 16.0,
       );
-  String get labelLargeFamily => 'Inter';
-  bool get labelLargeIsCustom => false;
-  TextStyle get labelLarge => GoogleFonts.inter(
+  String get labelLargeFamily => 'Geist';
+  bool get labelLargeIsCustom => true;
+  TextStyle get labelLarge => TextStyle(
+        fontFamily: 'Geist',
         color: theme.secondaryText,
         fontWeight: FontWeight.normal,
         fontSize: 16.0,
       );
-  String get labelMediumFamily => 'Inter';
-  bool get labelMediumIsCustom => false;
-  TextStyle get labelMedium => GoogleFonts.inter(
+  String get labelMediumFamily => 'Geist';
+  bool get labelMediumIsCustom => true;
+  TextStyle get labelMedium => TextStyle(
+        fontFamily: 'Geist',
         color: theme.secondaryText,
         fontWeight: FontWeight.normal,
         fontSize: 14.0,
       );
-  String get labelSmallFamily => 'Inter';
-  bool get labelSmallIsCustom => false;
-  TextStyle get labelSmall => GoogleFonts.inter(
+  String get labelSmallFamily => 'Geist';
+  bool get labelSmallIsCustom => true;
+  TextStyle get labelSmall => TextStyle(
+        fontFamily: 'Geist',
         color: theme.secondaryText,
         fontWeight: FontWeight.normal,
         fontSize: 12.0,
       );
-  String get bodyLargeFamily => 'Inter';
-  bool get bodyLargeIsCustom => false;
-  TextStyle get bodyLarge => GoogleFonts.inter(
+  String get bodyLargeFamily => 'Geist';
+  bool get bodyLargeIsCustom => true;
+  TextStyle get bodyLarge => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 16.0,
       );
-  String get bodyMediumFamily => 'Inter';
-  bool get bodyMediumIsCustom => false;
-  TextStyle get bodyMedium => GoogleFonts.inter(
+  String get bodyMediumFamily => 'Geist';
+  bool get bodyMediumIsCustom => true;
+  TextStyle get bodyMedium => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 14.0,
       );
-  String get bodySmallFamily => 'Inter';
-  bool get bodySmallIsCustom => false;
-  TextStyle get bodySmall => GoogleFonts.inter(
+  String get bodySmallFamily => 'Geist';
+  bool get bodySmallIsCustom => true;
+  TextStyle get bodySmall => TextStyle(
+        fontFamily: 'Geist',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 12.0,
@@ -328,10 +343,10 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF4B39EF);
-  late Color secondary = const Color(0xFF39D2C0);
-  late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFF262D34);
+  late Color primary = const Color(0xFF6061F0);
+  late Color secondary = const Color(0xFF008049);
+  late Color tertiary = const Color(0xFFF0E8F0);
+  late Color alternate = const Color(0xFF75757C);
   late Color primaryText = const Color(0xFFFFFFFF);
   late Color secondaryText = const Color(0xFF95A1AC);
   late Color primaryBackground = const Color(0xFF1D2428);
