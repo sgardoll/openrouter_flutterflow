@@ -1,6 +1,6 @@
+import '/backend/schema/structs/index.dart';
 import '/components/a_p_i_key_input_widget.dart';
 import '/components/model_lookup_and_selection_widget.dart';
-import '/components/parameters_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/openrouter_config.dart';
 import '/custom_code/openrouter_models.dart';
@@ -26,30 +26,31 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   void updateChatMessagesAtIndex(int index, Function(ChatMessage) updateFn) =>
       chatMessages[index] = updateFn(chatMessages[index]);
 
-  List<String> modelList = [];
-  void addToModelList(String item) => modelList.add(item);
-  void removeFromModelList(String item) => modelList.remove(item);
+  List<OpenRouterModelNamesAndIdsStruct> modelList = [];
+  void addToModelList(OpenRouterModelNamesAndIdsStruct item) =>
+      modelList.add(item);
+  void removeFromModelList(OpenRouterModelNamesAndIdsStruct item) =>
+      modelList.remove(item);
   void removeAtIndexFromModelList(int index) => modelList.removeAt(index);
-  void insertAtIndexInModelList(int index, String item) =>
+  void insertAtIndexInModelList(
+          int index, OpenRouterModelNamesAndIdsStruct item) =>
       modelList.insert(index, item);
-  void updateModelListAtIndex(int index, Function(String) updateFn) =>
+  void updateModelListAtIndex(
+          int index, Function(OpenRouterModelNamesAndIdsStruct) updateFn) =>
       modelList[index] = updateFn(modelList[index]);
 
   ///  State fields for stateful widgets in this page.
 
-  // Stores action output result for [Custom Class Method - OpenRouterService.fetchModels] action in HomePage widget.
-  List<OpenRouterModel>? getAlModelsOnLaunch;
-  // State field(s) for TabBar widget.
-  TabController? tabBarController;
-  int get tabBarCurrentIndex =>
-      tabBarController != null ? tabBarController!.index : 0;
-  int get tabBarPreviousIndex =>
-      tabBarController != null ? tabBarController!.previousIndex : 0;
-
+  // Stores action output result for [Custom Action - validateApiKey] action in HomePage widget.
+  String? validateApiKey;
+  // Stores action output result for [Custom Action - fetchOpenRouterModels] action in HomePage widget.
+  List<OpenRouterModelNamesAndIdsStruct>? fetchModels;
   // Model for APIKeyInput component.
   late APIKeyInputModel aPIKeyInputModel;
   // Model for ModelLookupAndSelection component.
   late ModelLookupAndSelectionModel modelLookupAndSelectionModel;
+  // Stores action output result for [Custom Action - fetchOpenRouterModels] action in ModelLookupAndSelection widget.
+  List<OpenRouterModelNamesAndIdsStruct>? updateModelList;
   // State field(s) for TextFieldSystem widget.
   FocusNode? textFieldSystemFocusNode;
   TextEditingController? textFieldSystemTextController;
@@ -61,24 +62,18 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   String? Function(BuildContext, String?)? textFieldUserTextControllerValidator;
   // State field(s) for CheckboxStreaming widget.
   bool? checkboxStreamingValue;
-  // Stores action output result for [Custom Class Method - OpenRouterConfig.createStandardRequest] action in Button widget.
-  OpenRouterRequest? createStandardRequest;
-  // Stores action output result for [Custom Class Method - OpenRouterService.sendChatRequest] action in Button widget.
-  OpenRouterResponse? sendChatRequest;
-  // Model for Parameters component.
-  late ParametersModel parametersModel;
+  // Stores action output result for [Custom Action - sendChatRequest] action in Button widget.
+  String? sendMessage;
 
   @override
   void initState(BuildContext context) {
     aPIKeyInputModel = createModel(context, () => APIKeyInputModel());
     modelLookupAndSelectionModel =
         createModel(context, () => ModelLookupAndSelectionModel());
-    parametersModel = createModel(context, () => ParametersModel());
   }
 
   @override
   void dispose() {
-    tabBarController?.dispose();
     aPIKeyInputModel.dispose();
     modelLookupAndSelectionModel.dispose();
     textFieldSystemFocusNode?.dispose();
@@ -86,7 +81,5 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
 
     textFieldUserFocusNode?.dispose();
     textFieldUserTextController?.dispose();
-
-    parametersModel.dispose();
   }
 }

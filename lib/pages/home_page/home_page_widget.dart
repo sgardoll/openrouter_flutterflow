@@ -1,12 +1,11 @@
+import '/backend/schema/structs/index.dart';
 import '/components/a_p_i_key_input_widget.dart';
 import '/components/model_lookup_and_selection_widget.dart';
 import '/components/open_router_response_widget.dart';
-import '/components/parameters_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/custom_code/openrouter_config.dart';
-import '/custom_code/openrouter_service.dart';
+import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +22,7 @@ class HomePageWidget extends StatefulWidget {
   State<HomePageWidget> createState() => _HomePageWidgetState();
 }
 
-class _HomePageWidgetState extends State<HomePageWidget>
-    with TickerProviderStateMixin {
+class _HomePageWidgetState extends State<HomePageWidget> {
   late HomePageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,21 +35,18 @@ class _HomePageWidgetState extends State<HomePageWidget>
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (FFAppState().openRouterApiKey != '') {
-        _model.getAlModelsOnLaunch =
-            await _model.openrouterService?.fetchModels(
-          forceRefresh: true,
+        _model.validateApiKey = await actions.validateApiKey(
+          FFAppState().openRouterApiKey,
         );
-        _model.modelList = _model.modelList.toList().cast<String>();
-        _model.openrouterConfig = OpenRouterConfig();
+        _model.fetchModels = await actions.fetchOpenRouterModels(
+          true,
+        );
+        _model.modelList = _model.fetchModels!
+            .toList()
+            .cast<OpenRouterModelNamesAndIdsStruct>();
         safeSetState(() {});
       }
     });
-
-    _model.tabBarController = TabController(
-      vsync: this,
-      length: 2,
-      initialIndex: 0,
-    )..addListener(() => safeSetState(() {}));
 
     _model.textFieldSystemTextController ??= TextEditingController();
     _model.textFieldSystemFocusNode ??= FocusNode();
@@ -100,546 +95,409 @@ class _HomePageWidgetState extends State<HomePageWidget>
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Flexible(
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment(0.0, 0),
-                      child: TabBar(
-                        labelColor: FlutterFlowTheme.of(context).primaryText,
-                        unselectedLabelColor:
-                            FlutterFlowTheme.of(context).secondaryText,
-                        labelStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  fontFamily: 'Geist',
-                                  letterSpacing: 0.0,
-                                  lineHeight: 0.9,
-                                ),
-                        unselectedLabelStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  fontFamily: 'Geist',
-                                  letterSpacing: 0.0,
-                                  lineHeight: 0.9,
-                                ),
-                        indicatorColor: FlutterFlowTheme.of(context).primary,
-                        indicatorWeight: 3.0,
-                        padding: EdgeInsets.all(4.0),
-                        tabs: [
-                          Tab(
-                            text: 'Model & \nMessages',
-                          ),
-                          Tab(
-                            text: 'Parameters',
-                          ),
-                        ],
-                        controller: _model.tabBarController,
-                        onTap: (i) async {
-                          [() async {}, () async {}][i]();
-                        },
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: _model.tabBarController,
-                        children: [
-                          KeepAliveWidgetWrapper(
-                            builder: (context) => Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(),
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      borderRadius: BorderRadius.circular(16.0),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          16.0, 16.0, 16.0, 16.0),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (valueOrDefault<bool>(
-                                            FFAppState().openRouterApiKey ==
-                                                    '',
-                                            true,
-                                          ))
-                                            wrapWithModel(
-                                              model: _model.aPIKeyInputModel,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              updateOnChange: true,
-                                              child: APIKeyInputWidget(
-                                                onKeySet: (apiKey) async {
-                                                  FFAppState()
-                                                          .openRouterApiKey =
-                                                      apiKey;
-                                                  FFAppState().update(() {});
-                                                },
-                                              ),
-                                            ),
-                                          wrapWithModel(
-                                            model: _model
-                                                .modelLookupAndSelectionModel,
-                                            updateCallback: () =>
-                                                safeSetState(() {}),
-                                            updateOnChange: true,
-                                            child:
-                                                ModelLookupAndSelectionWidget(
-                                              getOpenRouterModelsList:
-                                                  _model.modelList,
-                                            ),
-                                          ),
-                                          Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Messages',
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily: 'Geist',
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                              ),
-                                              Container(
-                                                width: double.infinity,
-                                                child: TextFormField(
-                                                  controller: _model
-                                                      .textFieldSystemTextController,
-                                                  focusNode: _model
-                                                      .textFieldSystemFocusNode,
-                                                  autofocus: false,
-                                                  obscureText: false,
-                                                  decoration: InputDecoration(
-                                                    hintText:
-                                                        'System Message (Optional)',
-                                                    hintStyle: FlutterFlowTheme
-                                                            .of(context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily: 'Geist',
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .alternate,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .secondaryText,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    errorBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .error,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .error,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    contentPadding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(
-                                                                16.0,
-                                                                16.0,
-                                                                16.0,
-                                                                16.0),
-                                                  ),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyLarge
-                                                      .override(
-                                                        fontFamily: 'Geist',
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                                  maxLines: 6,
-                                                  minLines: 4,
-                                                  validator: _model
-                                                      .textFieldSystemTextControllerValidator
-                                                      .asValidator(context),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: double.infinity,
-                                                child: TextFormField(
-                                                  controller: _model
-                                                      .textFieldUserTextController,
-                                                  focusNode: _model
-                                                      .textFieldUserFocusNode,
-                                                  autofocus: false,
-                                                  obscureText: false,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'User Message *',
-                                                    hintStyle: FlutterFlowTheme
-                                                            .of(context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily: 'Geist',
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .alternate,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .secondaryText,
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    errorBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            Color(0x00000000),
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            Color(0x00000000),
-                                                        width: 1.0,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    contentPadding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(
-                                                                16.0,
-                                                                16.0,
-                                                                16.0,
-                                                                16.0),
-                                                  ),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyLarge
-                                                      .override(
-                                                        fontFamily: 'Geist',
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                                  maxLines: 6,
-                                                  minLines: 4,
-                                                  validator: _model
-                                                      .textFieldUserTextControllerValidator
-                                                      .asValidator(context),
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Flexible(
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      children: [
-                                                        Theme(
-                                                          data: ThemeData(
-                                                            checkboxTheme:
-                                                                CheckboxThemeData(
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
-                                                                  bottomLeft: Radius
-                                                                      .circular(
-                                                                          0.0),
-                                                                  bottomRight: Radius
-                                                                      .circular(
-                                                                          0.0),
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          0.0),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          0.0),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            unselectedWidgetColor:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .alternate,
-                                                          ),
-                                                          child: Checkbox(
-                                                            value: _model
-                                                                    .checkboxStreamingValue ??=
-                                                                false,
-                                                            onChanged:
-                                                                (newValue) async {
-                                                              safeSetState(() =>
-                                                                  _model.checkboxStreamingValue =
-                                                                      newValue!);
-                                                            },
-                                                            side: (FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .alternate !=
-                                                                    null)
-                                                                ? BorderSide(
-                                                                    width: 2,
-                                                                    color: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .alternate,
-                                                                  )
-                                                                : null,
-                                                            activeColor:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .primary,
-                                                            checkColor:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .primary,
-                                                          ),
-                                                        ),
-                                                        Flexible(
-                                                          child: Text(
-                                                            'Enable streaming',
-                                                            maxLines: 2,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Geist',
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ].divide(
-                                                          SizedBox(width: 8.0)),
-                                                    ),
-                                                  ),
-                                                  Builder(
-                                                    builder: (context) =>
-                                                        FFButtonWidget(
-                                                      onPressed: () async {
-                                                        _model.createStandardRequest =
-                                                            OpenRouterConfig
-                                                                .createStandardRequest(
-                                                          model: _model
-                                                              .modelLookupAndSelectionModel
-                                                              .dropDownModelsAvailableValue!,
-                                                          userMessage: _model
-                                                              .textFieldUserTextController
-                                                              .text,
-                                                          systemMessage: _model
-                                                              .textFieldSystemTextController
-                                                              .text,
-                                                          preset: 'balanced',
-                                                          streaming:
-                                                              valueOrDefault<
-                                                                  bool>(
-                                                            _model
-                                                                .checkboxStreamingValue,
-                                                            false,
-                                                          ),
-                                                        );
-                                                        _model.sendChatRequest =
-                                                            await _model
-                                                                .openrouterService
-                                                                ?.sendChatRequest(
-                                                          _model
-                                                              .createStandardRequest!,
-                                                        );
-                                                        await showDialog(
-                                                          barrierDismissible:
-                                                              false,
-                                                          context: context,
-                                                          builder:
-                                                              (dialogContext) {
-                                                            return Dialog(
-                                                              elevation: 0,
-                                                              insetPadding:
-                                                                  EdgeInsets
-                                                                      .zero,
-                                                              backgroundColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                              alignment: AlignmentDirectional(
-                                                                      0.0, 0.0)
-                                                                  .resolve(
-                                                                      Directionality.of(
-                                                                          context)),
-                                                              child:
-                                                                  GestureDetector(
-                                                                onTap: () {
-                                                                  FocusScope.of(
-                                                                          dialogContext)
-                                                                      .unfocus();
-                                                                  FocusManager
-                                                                      .instance
-                                                                      .primaryFocus
-                                                                      ?.unfocus();
-                                                                },
-                                                                child:
-                                                                    OpenRouterResponseWidget(
-                                                                  openRouterResponse:
-                                                                      _model
-                                                                          .sendChatRequest!,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        );
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            16.0, 16.0, 16.0, 16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (valueOrDefault<bool>(
+                              FFAppState().openRouterApiKey == '',
+                              true,
+                            ))
+                              wrapWithModel(
+                                model: _model.aPIKeyInputModel,
+                                updateCallback: () => safeSetState(() {}),
+                                updateOnChange: true,
+                                child: APIKeyInputWidget(
+                                  onKeySet: (apiKey) async {
+                                    FFAppState().openRouterApiKey = apiKey;
+                                    FFAppState().update(() {});
+                                  },
+                                ),
+                              ),
+                            if (valueOrDefault<bool>(
+                              _model.modelList.isNotEmpty,
+                              false,
+                            ))
+                              wrapWithModel(
+                                model: _model.modelLookupAndSelectionModel,
+                                updateCallback: () => safeSetState(() {}),
+                                updateOnChange: true,
+                                child: ModelLookupAndSelectionWidget(
+                                  getOpenRouterModels: _model.fetchModels!,
+                                  updateModelList: () async {
+                                    _model.updateModelList =
+                                        await actions.fetchOpenRouterModels(
+                                      true,
+                                    );
+                                    _model.modelList = _model.updateModelList!
+                                        .toList()
+                                        .cast<
+                                            OpenRouterModelNamesAndIdsStruct>();
+                                    safeSetState(() {});
 
-                                                        safeSetState(() {});
-                                                      },
-                                                      text: 'Send Request',
-                                                      options: FFButtonOptions(
-                                                        height: 44.0,
-                                                        padding:
-                                                            EdgeInsets.all(8.0),
-                                                        iconPadding:
-                                                            EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                                    0.0,
-                                                                    0.0,
-                                                                    0.0,
-                                                                    0.0),
-                                                        color: FlutterFlowTheme
-                                                                .of(context)
-                                                            .secondaryBackground,
-                                                        textStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .titleSmall
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Geist',
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryText,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                        elevation: 0.0,
-                                                        borderSide: BorderSide(
+                                    safeSetState(() {});
+                                  },
+                                ),
+                              ),
+                            if (valueOrDefault<bool>(
+                              _model.modelList.isNotEmpty,
+                              false,
+                            ))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Messages',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .override(
+                                          fontFamily: 'Geist',
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    child: TextFormField(
+                                      controller:
+                                          _model.textFieldSystemTextController,
+                                      focusNode:
+                                          _model.textFieldSystemFocusNode,
+                                      autofocus: false,
+                                      obscureText: false,
+                                      decoration: InputDecoration(
+                                        hintText: 'System Message (Optional)',
+                                        hintStyle: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .override(
+                                              fontFamily: 'Geist',
+                                              letterSpacing: 0.0,
+                                            ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .alternate,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryText,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        errorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        contentPadding:
+                                            EdgeInsetsDirectional.fromSTEB(
+                                                16.0, 16.0, 16.0, 16.0),
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .override(
+                                            fontFamily: 'Geist',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      maxLines: 6,
+                                      minLines: 4,
+                                      validator: _model
+                                          .textFieldSystemTextControllerValidator
+                                          .asValidator(context),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    child: TextFormField(
+                                      controller:
+                                          _model.textFieldUserTextController,
+                                      focusNode: _model.textFieldUserFocusNode,
+                                      autofocus: false,
+                                      obscureText: false,
+                                      decoration: InputDecoration(
+                                        hintText: 'User Message *',
+                                        hintStyle: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .override(
+                                              fontFamily: 'Geist',
+                                              letterSpacing: 0.0,
+                                            ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .alternate,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryText,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        errorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        contentPadding:
+                                            EdgeInsetsDirectional.fromSTEB(
+                                                16.0, 16.0, 16.0, 16.0),
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .override(
+                                            fontFamily: 'Geist',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      maxLines: 6,
+                                      minLines: 4,
+                                      validator: _model
+                                          .textFieldUserTextControllerValidator
+                                          .asValidator(context),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (responsiveVisibility(
+                                        context: context,
+                                        phone: false,
+                                        tablet: false,
+                                        tabletLandscape: false,
+                                        desktop: false,
+                                      ))
+                                        Flexible(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Theme(
+                                                data: ThemeData(
+                                                  checkboxTheme:
+                                                      CheckboxThemeData(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                                0.0),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                                0.0),
+                                                        topLeft:
+                                                            Radius.circular(
+                                                                0.0),
+                                                        topRight:
+                                                            Radius.circular(
+                                                                0.0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  unselectedWidgetColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .alternate,
+                                                ),
+                                                child: Checkbox(
+                                                  value: _model
+                                                          .checkboxStreamingValue ??=
+                                                      false,
+                                                  onChanged: (newValue) async {
+                                                    safeSetState(() => _model
+                                                            .checkboxStreamingValue =
+                                                        newValue!);
+                                                  },
+                                                  side: (FlutterFlowTheme.of(
+                                                                  context)
+                                                              .alternate !=
+                                                          null)
+                                                      ? BorderSide(
+                                                          width: 2,
                                                           color: FlutterFlowTheme
                                                                   .of(context)
                                                               .alternate,
-                                                          width: 1.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                        hoverColor:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                        hoverTextColor:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .info,
-                                                        hoverElevation: 2.0,
+                                                        )
+                                                      : null,
+                                                  activeColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                  checkColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                ),
+                                              ),
+                                              Flexible(
+                                                child: Text(
+                                                  'Enable streaming',
+                                                  maxLines: 2,
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Geist',
+                                                        letterSpacing: 0.0,
                                                       ),
+                                                ),
+                                              ),
+                                            ].divide(SizedBox(width: 8.0)),
+                                          ),
+                                        ),
+                                      Builder(
+                                        builder: (context) => FFButtonWidget(
+                                          onPressed: () async {
+                                            _model.sendMessage =
+                                                await actions.sendChatRequest(
+                                              _model
+                                                  .modelLookupAndSelectionModel
+                                                  .dropDownModelsAvailableValue!,
+                                              _model.textFieldUserTextController
+                                                  .text,
+                                              _model
+                                                  .textFieldSystemTextController
+                                                  .text,
+                                              'balanced',
+                                            );
+                                            await showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (dialogContext) {
+                                                return Dialog(
+                                                  elevation: 0,
+                                                  insetPadding: EdgeInsets.zero,
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                              0.0, 0.0)
+                                                          .resolve(
+                                                              Directionality.of(
+                                                                  context)),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      FocusScope.of(
+                                                              dialogContext)
+                                                          .unfocus();
+                                                      FocusManager
+                                                          .instance.primaryFocus
+                                                          ?.unfocus();
+                                                    },
+                                                    child:
+                                                        OpenRouterResponseWidget(
+                                                      openRouterResponse:
+                                                          _model.sendMessage!,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ].divide(SizedBox(height: 16.0)),
+                                                );
+                                              },
+                                            );
+
+                                            safeSetState(() {});
+                                          },
+                                          text: 'Send Request',
+                                          options: FFButtonOptions(
+                                            height: 44.0,
+                                            padding: EdgeInsets.all(8.0),
+                                            iconPadding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 0.0, 0.0, 0.0),
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                            textStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .override(
+                                                      fontFamily: 'Geist',
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryText,
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                            elevation: 0.0,
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .alternate,
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            hoverColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primary,
+                                            hoverTextColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .info,
+                                            hoverElevation: 2.0,
                                           ),
-                                        ].divide(SizedBox(height: 24.0)),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          KeepAliveWidgetWrapper(
-                            builder: (context) => Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                wrapWithModel(
-                                  model: _model.parametersModel,
-                                  updateCallback: () => safeSetState(() {}),
-                                  updateOnChange: true,
-                                  child: ParametersWidget(
-                                    openrouterConfig: OpenRouterConfig(),
-                                    openRouterService: OpenRouterService(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                                ].divide(SizedBox(height: 16.0)),
+                              ),
+                          ].divide(SizedBox(height: 24.0)),
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

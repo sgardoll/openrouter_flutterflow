@@ -1,8 +1,9 @@
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/custom_code/openrouter_config.dart';
 import 'package:flutter/material.dart';
 import 'model_lookup_and_selection_model.dart';
 export 'model_lookup_and_selection_model.dart';
@@ -10,10 +11,12 @@ export 'model_lookup_and_selection_model.dart';
 class ModelLookupAndSelectionWidget extends StatefulWidget {
   const ModelLookupAndSelectionWidget({
     super.key,
-    required this.getOpenRouterModelsList,
+    required this.getOpenRouterModels,
+    required this.updateModelList,
   });
 
-  final List<String>? getOpenRouterModelsList;
+  final List<OpenRouterModelNamesAndIdsStruct>? getOpenRouterModels;
+  final Future Function()? updateModelList;
 
   @override
   State<ModelLookupAndSelectionWidget> createState() =>
@@ -61,29 +64,32 @@ class _ModelLookupAndSelectionWidgetState
                     fontWeight: FontWeight.w600,
                   ),
             ),
-            InkWell(
-              splashColor: Colors.transparent,
-              focusColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onTap: () async {
-                _model.updatePage(() {});
-              },
-              child: Icon(
-                Icons.refresh_rounded,
-                color: FlutterFlowTheme.of(context).secondaryText,
+            FlutterFlowIconButton(
+              borderColor: FlutterFlowTheme.of(context).alternate,
+              borderRadius: 8.0,
+              buttonSize: 40.0,
+              fillColor: FlutterFlowTheme.of(context).secondaryBackground,
+              icon: Icon(
+                Icons.refresh_sharp,
+                color: FlutterFlowTheme.of(context).primaryText,
                 size: 24.0,
               ),
+              showLoadingIndicator: true,
+              onPressed: () async {
+                await widget.updateModelList?.call();
+              },
             ),
           ],
         ),
         FlutterFlowDropDown<String>(
           controller: _model.dropDownModelsAvailableValueController ??=
               FormFieldController<String>(
-            _model.dropDownModelsAvailableValue ??=
-                OpenRouterConfig.defaultModel,
+            _model.dropDownModelsAvailableValue ??= '',
           ),
-          options: widget.getOpenRouterModelsList!,
+          options: List<String>.from(
+              widget.getOpenRouterModels!.map((e) => e.modelId).toList()),
+          optionLabels:
+              widget.getOpenRouterModels!.map((e) => e.modelName).toList(),
           onChanged: (val) =>
               safeSetState(() => _model.dropDownModelsAvailableValue = val),
           width: MediaQuery.sizeOf(context).width * 1.0,
