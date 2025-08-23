@@ -109,7 +109,7 @@ class OpenRouterRequestParameters {
     if (repetitionPenalty != null)
       json['repetition_penalty'] = repetitionPenalty;
     if (maxTokens != null) json['max_tokens'] = maxTokens;
-    if (stop != null && stop!.isNotEmpty) json['stop'] = stop;
+    if (stop?.isNotEmpty ?? false) json['stop'] = stop;
     if (seed != null) json['seed'] = seed;
     json['stream'] = stream;
     return json;
@@ -134,8 +134,8 @@ class ProviderPreferences {
       'allow_fallbacks': allowFallbacks,
       'data_collection': dataCollection ? 'allow' : 'deny',
     };
-    if (order != null && order!.isNotEmpty) json['order'] = order;
-    if (require != null && require!.isNotEmpty) json['require'] = require;
+    if (order?.isNotEmpty ?? false) json['order'] = order;
+    if (require?.isNotEmpty ?? false) json['require'] = require;
     return json;
   }
 }

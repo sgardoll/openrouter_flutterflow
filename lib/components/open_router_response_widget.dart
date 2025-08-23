@@ -2,7 +2,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/custom_code/openrouter_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -18,7 +17,7 @@ class OpenRouterResponseWidget extends StatefulWidget {
     required this.openRouterResponse,
   });
 
-  final OpenRouterResponse? openRouterResponse;
+  final String? openRouterResponse;
 
   @override
   State<OpenRouterResponseWidget> createState() =>
@@ -128,8 +127,7 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             MarkdownBody(
-                              data: widget.openRouterResponse!.choices
-                                  .firstOrNull!.message.content,
+                              data: widget.openRouterResponse!,
                               selectable: true,
                               onTapLink: (_, url, __) => launchURL(url!),
                             ),
@@ -145,9 +143,8 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                   children: [
                     FFButtonWidget(
                       onPressed: () async {
-                        await Clipboard.setData(ClipboardData(
-                            text: widget.openRouterResponse!.choices
-                                .firstOrNull!.message.content));
+                        await Clipboard.setData(
+                            ClipboardData(text: widget.openRouterResponse!));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -175,7 +172,7 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                             .bodyMedium
                             .override(
                               fontFamily: 'Geist',
-                              color: FlutterFlowTheme.of(context).primaryText,
+                              color: FlutterFlowTheme.of(context).secondaryText,
                               letterSpacing: 0.0,
                             ),
                         elevation: 0.0,
@@ -197,7 +194,7 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                         padding: EdgeInsets.all(8.0),
                         iconPadding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color: FlutterFlowTheme.of(context).primary,
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
                         textStyle:
                             FlutterFlowTheme.of(context).bodyMedium.override(
                                   fontFamily: 'Geist',
@@ -206,7 +203,7 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                                 ),
                         elevation: 0.0,
                         borderSide: BorderSide(
-                          color: Colors.transparent,
+                          color: FlutterFlowTheme.of(context).alternate,
                           width: 1.0,
                         ),
                         borderRadius: BorderRadius.circular(8.0),

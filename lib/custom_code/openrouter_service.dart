@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'openrouter_models.dart';
+import 'openrouter_errors.dart';
+import 'openrouter_config_helpers.dart';
 
 class OpenRouterService {
-  static const String _baseUrl = 'https://openrouter.ai/api/v1';
-  static const String _modelsEndpoint = '$_baseUrl/models';
-  static const String _chatEndpoint = '$_baseUrl/chat/completions';
   static const String _apiKeyKey = 'openrouter_api_key';
 
   String? _apiKey;
@@ -38,19 +37,13 @@ class OpenRouterService {
     await prefs.remove(_apiKeyKey);
   }
 
-  bool get hasApiKey => _apiKey != null && _apiKey!.isNotEmpty;
+  bool get hasApiKey => _apiKey?.isNotEmpty ?? false;
 
-  Map<String, String> get _headers => {
-        'Authorization': 'Bearer $_apiKey',
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://promptcraft.app',
-        'X-Title': 'PromptCraft',
-      };
+  Map<String, String> get _headers => OpenRouterApiConfig.getHeaders(_apiKey!);
 
   Future<List<OpenRouterModel>> fetchModels({bool forceRefresh = false}) async {
     if (!hasApiKey) {
-      throw Exception(
-          'API key not set. Please configure your OpenRouter API key.');
+      throw OpenRouterError.apiKeyMissing();
     }
 
     // Return cached models if available and not expired (cache for 1 hour)
@@ -63,7 +56,7 @@ class OpenRouterService {
 
     try {
       final response = await http.get(
-        Uri.parse(_modelsEndpoint),
+        Uri.parse(OpenRouterApiConfig.modelsEndpoint),
         headers: _headers,
       );
 
@@ -76,7 +69,7 @@ class OpenRouterService {
               try {
                 return OpenRouterModel.fromJson(json);
               } catch (e) {
-                print('Error parsing model: $json - $e');
+                // Skip malformed models but don't throw
                 return null;
               }
             })
@@ -84,32 +77,31 @@ class OpenRouterService {
             .cast<OpenRouterModel>()
             .toList();
 
-        // Sort by name for better UX
-        _cachedModels.sort(
-            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        // Sort using helper method
+        _cachedModels = OpenRouterModelHelper.sortModels(_cachedModels);
         _lastModelsFetch = DateTime.now();
 
         return _cachedModels;
       } else {
-        final errorMessage = response.statusCode == 401
-            ? 'Invalid API key. Please check your OpenRouter API key.'
-            : 'Failed to fetch models: ${response.statusCode}';
-        throw Exception(errorMessage);
+        throw OpenRouterErrorHandler.fromHttpStatus(
+          response.statusCode,
+          'Failed to fetch models: ${response.statusCode}',
+        );
       }
     } catch (e) {
-      throw Exception('Error fetching models: $e');
+      if (e is OpenRouterError) rethrow;
+      throw OpenRouterErrorHandler.fromException(e, null);
     }
   }
 
   Future<OpenRouterResponse> sendChatRequest(OpenRouterRequest request) async {
     if (!hasApiKey) {
-      throw Exception(
-          'API key not set. Please configure your OpenRouter API key.');
+      throw OpenRouterError.apiKeyMissing();
     }
 
     try {
       final response = await http.post(
-        Uri.parse(_chatEndpoint),
+        Uri.parse(OpenRouterApiConfig.chatEndpoint),
         headers: _headers,
         body: json.encode(request.toJson()),
       );
@@ -120,17 +112,20 @@ class OpenRouterService {
       } else {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['error']?['message'] ?? 'Unknown error';
-        throw Exception('API request failed: $errorMessage');
+        throw OpenRouterError.apiError(
+          message: errorMessage,
+          statusCode: response.statusCode,
+        );
       }
     } catch (e) {
-      throw Exception('Error sending chat request: $e');
+      if (e is OpenRouterError) rethrow;
+      throw OpenRouterErrorHandler.fromException(e, null);
     }
   }
 
   Stream<String> sendStreamingChatRequest(OpenRouterRequest request) async* {
     if (!hasApiKey) {
-      throw Exception(
-          'API key not set. Please configure your OpenRouter API key.');
+      throw OpenRouterError.apiKeyMissing();
     }
 
     final streamingRequest = OpenRouterRequest(
@@ -152,7 +147,8 @@ class OpenRouterService {
     );
 
     try {
-      final httpRequest = http.Request('POST', Uri.parse(_chatEndpoint));
+      final httpRequest =
+          http.Request('POST', Uri.parse(OpenRouterApiConfig.chatEndpoint));
       httpRequest.headers.addAll(_headers);
       httpRequest.body = json.encode(streamingRequest.toJson());
 
@@ -177,86 +173,34 @@ class OpenRouterService {
           }
         }
       } else {
-        throw Exception(
-            'Streaming request failed: ${streamedResponse.statusCode}');
+        throw OpenRouterError.streamingError(
+          message: 'Request failed with status ${streamedResponse.statusCode}',
+          statusCode: streamedResponse.statusCode,
+        );
       }
     } catch (e) {
-      throw Exception('Error in streaming request: $e');
+      if (e is OpenRouterError) rethrow;
+      throw OpenRouterError.streamingError(
+        message: 'Streaming connection error',
+        originalError: e.toString(),
+      );
     }
   }
 
   List<OpenRouterModel> getPopularModels() {
-    final popularModelIds = [
-      'anthropic/claude-3.5-sonnet',
-      'openai/gpt-4o',
-      'openai/gpt-4o-mini',
-      'google/gemini-pro-1.5',
-      'meta-llama/llama-3.1-8b-instruct:free',
-      'microsoft/wizardlm-2-8x22b',
-      'anthropic/claude-3-haiku',
-      'google/gemma-2-9b-it:free',
-    ];
-
-    final popular = <OpenRouterModel>[];
-    final remaining = <OpenRouterModel>[];
-
-    for (final model in _cachedModels) {
-      if (popularModelIds.contains(model.id)) {
-        popular.add(model);
-      } else {
-        remaining.add(model);
-      }
-    }
-
-    // Sort popular models by the order in popularModelIds
-    popular.sort((a, b) {
-      final aIndex = popularModelIds.indexOf(a.id);
-      final bIndex = popularModelIds.indexOf(b.id);
-      return aIndex.compareTo(bIndex);
-    });
-
-    return [...popular, ...remaining];
+    return OpenRouterModelHelper.sortModels(_cachedModels);
   }
 
   String generateCurlCommand(OpenRouterRequest request) {
-    final requestBody = json.encode(request.toJson());
-
-    return '''curl https://openrouter.ai/api/v1/chat/completions \\
-  -H "Authorization: Bearer \$OPENROUTER_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '$requestBody' ''';
+    return OpenRouterCodeGenerator.generateCurlCommand(
+        request, _apiKey ?? 'YOUR_API_KEY');
   }
 
   String generatePythonCode(OpenRouterRequest request) {
-    final requestBody = json.encode(request.toJson());
-
-    return '''import requests
-import json
-
-response = requests.post(
-    url="https://openrouter.ai/api/v1/chat/completions",
-    headers={
-        "Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"],
-        "Content-Type": "application/json"
-    },
-    data=json.dumps($requestBody)
-)
-
-print(response.json())''';
+    return OpenRouterCodeGenerator.generatePythonCode(request);
   }
 
   String generateJavaScriptCode(OpenRouterRequest request) {
-    final requestBody = json.encode(request.toJson());
-
-    return '''fetch("https://openrouter.ai/api/v1/chat/completions", {
-  method: "POST",
-  headers: {
-    "Authorization": "Bearer " + process.env.OPENROUTER_API_KEY,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify($requestBody)
-})
-.then(response => response.json())
-.then(data => console.log(data));''';
+    return OpenRouterCodeGenerator.generateJavaScriptCode(request);
   }
 }
