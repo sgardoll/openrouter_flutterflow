@@ -195,12 +195,13 @@ class _OpenRouterResponseWidgetState extends State<OpenRouterResponseWidget> {
                         iconPadding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                         color: FlutterFlowTheme.of(context).secondaryBackground,
-                        textStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.override(
-                                  fontFamily: 'Geist',
-                                  color: FlutterFlowTheme.of(context).info,
-                                  letterSpacing: 0.0,
-                                ),
+                        textStyle: FlutterFlowTheme.of(context)
+                            .bodyMedium
+                            .override(
+                              fontFamily: 'Geist',
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              letterSpacing: 0.0,
+                            ),
                         elevation: 0.0,
                         borderSide: BorderSide(
                           color: FlutterFlowTheme.of(context).alternate,

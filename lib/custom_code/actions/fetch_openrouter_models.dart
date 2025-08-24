@@ -12,7 +12,7 @@ import '/custom_code/openrouter_service.dart';
 
 /// Fetch available OpenRouter models Returns a list of model names, or empty
 /// list on error
-Future<List<OpenRouterModelNamesAndIdsStruct>> fetchOpenRouterModels(
+Future<List<OpenRouterModelNamesAndIdsStruct>> fetchOpenrouterModels(
     bool forceRefresh) async {
   try {
     final service = OpenRouterService();

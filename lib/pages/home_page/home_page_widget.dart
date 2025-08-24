@@ -35,10 +35,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (FFAppState().openRouterApiKey != '') {
-        _model.validateApiKey = await actions.validateApiKey(
+        _model.validateApiKeyOnLaunch = await actions.validateApiKey(
           FFAppState().openRouterApiKey,
         );
-        _model.fetchModels = await actions.fetchOpenRouterModels(
+        _model.fetchModels = await actions.fetchOpenrouterModels(
           true,
         );
         _model.modelList = _model.fetchModels!
@@ -113,21 +113,42 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (valueOrDefault<bool>(
-                              FFAppState().openRouterApiKey == '',
-                              true,
-                            ))
-                              wrapWithModel(
-                                model: _model.aPIKeyInputModel,
-                                updateCallback: () => safeSetState(() {}),
-                                updateOnChange: true,
-                                child: APIKeyInputWidget(
-                                  onKeySet: (apiKey) async {
+                            wrapWithModel(
+                              model: _model.aPIKeyInputModel,
+                              updateCallback: () => safeSetState(() {}),
+                              updateOnChange: true,
+                              child: APIKeyInputWidget(
+                                onKeySet: (apiKey) async {
+                                  _model.validateApiKey =
+                                      await actions.validateApiKey(
+                                    FFAppState().openRouterApiKey,
+                                  );
+                                  if (_model.validateApiKey == '') {
                                     FFAppState().openRouterApiKey = apiKey;
                                     FFAppState().update(() {});
-                                  },
-                                ),
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          _model.validateApiKey!,
+                                          style: TextStyle(
+                                            fontFamily: 'Geist',
+                                            color: FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                          ),
+                                        ),
+                                        duration: Duration(milliseconds: 4000),
+                                        backgroundColor:
+                                            FlutterFlowTheme.of(context)
+                                                .secondary,
+                                      ),
+                                    );
+                                  }
+
+                                  safeSetState(() {});
+                                },
                               ),
+                            ),
                             if (valueOrDefault<bool>(
                               _model.modelList.isNotEmpty,
                               false,
@@ -140,7 +161,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                   getOpenRouterModels: _model.fetchModels!,
                                   updateModelList: () async {
                                     _model.updateModelList =
-                                        await actions.fetchOpenRouterModels(
+                                        await actions.fetchOpenrouterModels(
                                       true,
                                     );
                                     _model.modelList = _model.updateModelList!

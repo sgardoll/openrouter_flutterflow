@@ -42,14 +42,16 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Custom Action - validateApiKey] action in HomePage widget.
-  String? validateApiKey;
-  // Stores action output result for [Custom Action - fetchOpenRouterModels] action in HomePage widget.
+  String? validateApiKeyOnLaunch;
+  // Stores action output result for [Custom Action - fetchOpenrouterModels] action in HomePage widget.
   List<OpenRouterModelNamesAndIdsStruct>? fetchModels;
   // Model for APIKeyInput component.
   late APIKeyInputModel aPIKeyInputModel;
+  // Stores action output result for [Custom Action - validateApiKey] action in APIKeyInput widget.
+  String? validateApiKey;
   // Model for ModelLookupAndSelection component.
   late ModelLookupAndSelectionModel modelLookupAndSelectionModel;
-  // Stores action output result for [Custom Action - fetchOpenRouterModels] action in ModelLookupAndSelection widget.
+  // Stores action output result for [Custom Action - fetchOpenrouterModels] action in ModelLookupAndSelection widget.
   List<OpenRouterModelNamesAndIdsStruct>? updateModelList;
   // State field(s) for TextFieldSystem widget.
   FocusNode? textFieldSystemFocusNode;
